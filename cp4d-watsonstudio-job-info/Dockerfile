@@ -5,7 +5,6 @@ FROM registry.access.redhat.com/ubi8/python-38
 COPY requirements.txt .
 COPY ../cpdctl_linux_amd64.tar.gz .
 
-
 RUN pip install -r requirements.txt \
     && tar -xzf cpdctl_linux_amd64.tar.gz \
     && mv cpdctl /opt/app-root/bin \
