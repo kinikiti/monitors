@@ -7,7 +7,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt \
     && latest_release=`curl https://api.github.com/repos/IBM/cpdctl/releases/latest` \
     && cpdctl_version=`echo $latest_release |python -c "import json; import sys; obj=json.load(sys.stdin); print (obj['tag_name'])"` \
-    && wget -c https://github.com/IBM/cpdctl/releases/download/v1.1.194/cpdctl_linux_amd64.tar.gz -O - | tar -xz \
+    && wget -e use_proxy=yes -e https_proxy=http://proxyapp.fediap.be:8080 -c https://github.com/IBM/cpdctl/releases/download/v1.1.194/cpdctl_linux_amd64.tar.gz -O - | tar -xz \
     && mv cpdctl /opt/app-root/bin \
     && chmod +x /opt/app-root/bin/cpdctl
 
