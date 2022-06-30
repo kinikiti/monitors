@@ -6,9 +6,7 @@ COPY requirements.txt .
 COPY cpdctl_linux_amd64.tar.gz .
 
 RUN pip install -r requirements.txt \
-    && latest_release=`curl https://api.github.com/repos/IBM/cpdctl/releases/latest` \
-    && cpdctl_version=`echo $latest_release |python -c "import json; import sys; obj=json.load(sys.stdin); print (obj['tag_name'])"` \
-    && tar -xzf cpdctl_linux_amd64.tar.gz
+    && tar -xzf cpdctl_linux_amd64.tar.gz \
     && mv cpdctl /opt/app-root/bin \
     && chmod +x /opt/app-root/bin/cpdctl
 
