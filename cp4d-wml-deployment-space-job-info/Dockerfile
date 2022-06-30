@@ -3,7 +3,7 @@ FROM registry.access.redhat.com/ubi8/python-38
 
 # install dependencies
 COPY requirements.txt .
-ADD https://github.com/IBM/cpdctl/releases/download/v1.1.194/cpdctl_linux_amd64.tar.gz
+ADD https://github.com/IBM/cpdctl/releases/download/v1.1.194/cpdctl_linux_amd64.tar.gz .
 
 RUN pip install -r requirements.txt \
     && tar -xzf cpdctl_linux_amd64.tar.gz \
