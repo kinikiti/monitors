@@ -52,13 +52,27 @@ class RandomNumberCollector(object):
 
         jobs_list = cp4d_monitor.get_jobs_list(projects)
         total_jobs = 0
+        watsonstudio_active_jobs_overall_count = 0
         for project in projects:
             if project['metadata']['guid'] in jobs_list.keys():
+                project_jobs = jobs_list[project['metadata']['guid']]['results']
+                for job in project_jobs:
+                    runs = cp4d_monitor.get_job_run_info(project_id=project['metadata']['guid'], job_id=job['metadata']['asset_id'])
+                    if len(runs) == 0:
+                        continue
+                    run = runs[0]
+                    if run["entity"]["job_run"]["state"] == "Running": watsonstudio_active_jobs_overall_count += 1
                 total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
+                print(watsonstudio_active_jobs_overall_count)
         jobs = CounterMetricFamily("jobs_count", "Jobs at the platform", labels=['jobsCount'])
         jobs.add_metric(['jobsCount'], total_jobs)
         yield jobs
 
+        for job in project_jobs:
+            runs = cp4d_monitor.get_job_run_info(project_id=project_id,job_id=job['metadata']['asset_id'])
+            if len(runs) == 0:
+                continue
+            run = runs[0]
 
 
 if __name__ == "__main__":
