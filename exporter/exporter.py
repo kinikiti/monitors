@@ -68,12 +68,6 @@ class RandomNumberCollector(object):
         jobs.add_metric(['jobsCount'], total_jobs)
         yield jobs
 
-        for job in project_jobs:
-            runs = cp4d_monitor.get_job_run_info(project_id=project_id,job_id=job['metadata']['asset_id'])
-            if len(runs) == 0:
-                continue
-            run = runs[0]
-
 
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
