@@ -93,6 +93,7 @@ class RandomNumberCollector(object):
             if len(pods) > 0:
                 total_runtime += 1
                 for pod in pods:
+                    print(pod)
                     project_total_runtime = +1
                     key_deployment = pod['metadata']['name'][0:-14]
                     deployment_resources = deployments[key_deployment].spec.template.spec.containers[0].resources
