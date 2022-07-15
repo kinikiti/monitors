@@ -63,11 +63,13 @@ class RandomNumberCollector(object):
                     run = runs[0]
                     if run["entity"]["job_run"]["state"] == "Running": watsonstudio_active_jobs_overall_count += 1
                 total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
-                print(watsonstudio_active_jobs_overall_count)
+
         jobs = CounterMetricFamily("jobs_count", "Jobs at the platform", labels=['jobsCount'])
         jobs.add_metric(['jobsCount'], total_jobs)
         yield jobs
 
+        active_jobs = CounterMetricFamily("active_jobs_count", "Active jobs at the platform", labels=['activeJobsCount'])
+        active_jobs.add_metric(['activeJobsCount'], watsonstudio_active_jobs_overall_count)
 
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
