@@ -10,8 +10,6 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import json
 
-totalRandomNumber = 0
-
 
 def get_admin_token(admin_pass='password',cp4d_host='https://ibm-nginx-svc'):
     headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
@@ -40,22 +38,14 @@ class RandomNumberCollector(object):
     def collect(self):
         projects = cp4d_monitor.get_project_list()
 
-        monitor_type = cp4d_monitor.create_and_validate_type("cp4d_platform_global_connections")
-        event_type_number_of_connections = cp4d_monitor.create_and_validate_type("global_connections_count")
-        event_type_valid_connection = cp4d_monitor.create_and_validate_type("global_connection_valid")
-        events = []
-
         cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
         cp4d_platform_global_connections_request = cp4d_monitor.get_all_available_connections_response(cp4d_catalog_id)
-
-        gauge = GaugeMetricFamily("random_number", "A random number generator, I have no better idea",
-                                  labels=["randomNum"])
-        gauge.add_metric(['random_num'], cp4d_platform_global_connections_request)
-        yield gauge
-        count = CounterMetricFamily("random_number_2", "A random number 2.0", labels=['randomNum'])
-        global totalRandomNumber
-        totalRandomNumber += random.randint(1, 30)
-        count.add_metric(['random_num'], totalRandomNumber)
+        if cp4d_platform_global_connections_request.status_code == 200:
+            connection_count = cp4d_platform_global_connections_request.json()["total_count"]
+        else:
+            connection_count = 0
+        count = CounterMetricFamily("connections_count", "Platform connection counts", labels=['connectionCount'])
+        count.add_metric(['connectionCount'], connection_count)
         yield count
 
 
