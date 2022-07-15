@@ -95,7 +95,7 @@ class RandomNumberCollector(object):
                 for pod in pods:
                     print(pod)
                     project_total_runtime = +1
-                    key_deployment = pod['metadata']['name'][0:-14]
+                    key_deployment = pod['metadata']['name'][:-2]
                     deployment_resources = deployments[key_deployment].spec.template.spec.containers[0].resources
                     pod_cpu_usage = convert_cpu_unit(pod['containers'][1]['usage']['cpu'])
                     pod_cpu_limits = convert_cpu_unit(deployment_resources.limits['cpu'])
