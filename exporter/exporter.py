@@ -53,6 +53,17 @@ class RandomNumberCollector(object):
 
     def collect(self):
 
+        total_runtime = 0
+        project_total_runtime = 0
+        project_total_cpu_limits = 0
+        project_total_memory_limits = 0
+        project_total_cpu_requests = 0
+        project_total_memory_requests = 0
+        project_total_memory_usage = 0
+        project_total_cpu_usage = 0
+        total_jobs = 0
+        watsonstudio_active_jobs_overall_count = 0
+
         projects = cp4d_monitor.get_project_list()
 
         cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
@@ -61,14 +72,9 @@ class RandomNumberCollector(object):
             connection_count = cp4d_platform_global_connections_request.json()["total_count"]
         else:
             connection_count = 0
-        count = CounterMetricFamily("connections_count", "Platform connection counts", labels=['connectionCount'])
-        count.add_metric(['connectionCount'], connection_count)
-        yield count
-
 
         jobs_list = cp4d_monitor.get_jobs_list(projects)
-        total_jobs = 0
-        watsonstudio_active_jobs_overall_count = 0
+
         for project in projects:
             if project['metadata']['guid'] in jobs_list.keys():
                 project_jobs = jobs_list[project['metadata']['guid']]['results']
@@ -80,29 +86,8 @@ class RandomNumberCollector(object):
                     if run["entity"]["job_run"]["state"] == "Running": watsonstudio_active_jobs_overall_count += 1
                 total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
 
-        jobs = CounterMetricFamily("jobs_count", "Jobs at the platform", labels=['jobsCount'])
-        jobs.add_metric(['jobsCount'], total_jobs)
-        yield jobs
-
-        active_jobs = CounterMetricFamily("active_jobs_count", "Active jobs at the platform", labels=['activeJobsCount'])
-        active_jobs.add_metric(['activeJobsCount'], watsonstudio_active_jobs_overall_count)
-        yield active_jobs
-
-        total_runtime = 0
-        events = []
-        for project in projects:
-            project_total_runtime = 0
-            project_total_cpu_limits = 0
-            project_total_memory_limits = 0
-            project_total_cpu_requests = 0
-            project_total_memory_requests = 0
-            project_total_memory_usage = 0
-            project_total_cpu_usage = 0
-
             labels = 'icpdsupport/projectId={},runtime=true'.format(project['metadata']['guid'])
             pods = cp4d_monitor.get_pod_usage(label_selector=labels)
-
-            print(pods)
 
             app_labels = 'dsxProjectId={}'.format(project['metadata']['guid'])
             deployments = cp4d_monitor.get_deployment(label_selector=app_labels)
@@ -125,10 +110,47 @@ class RandomNumberCollector(object):
                     project_total_cpu_requests += pod_cpu_requests
                     project_total_memory_requests += pod_memory_requests
                     project_total_memory_usage += pod_memory_usage
-                    project_total_cpu_usage += project_total_cpu_usage
+                    project_total_cpu_usage += pod_cpu_usage
 
-                    key_deployment = pod['metadata']['name'][0:-14]
-                    deployment_resources = deployments[key_deployment].spec.template.spec.containers[0].resources
+        count = CounterMetricFamily("connections_count", "Platform connection counts", labels=['connectionCount'])
+        count.add_metric(['connectionCount'], connection_count)
+        yield count
+
+        jobs = CounterMetricFamily("jobs_count", "Jobs at the platform", labels=['jobsCount'])
+        jobs.add_metric(['jobsCount'], total_jobs)
+        yield jobs
+
+        active_jobs = CounterMetricFamily("active_jobs_count", "Active jobs at the platform", labels=['activeJobsCount'])
+        active_jobs.add_metric(['activeJobsCount'], watsonstudio_active_jobs_overall_count)
+        yield active_jobs
+
+        project_total_cpu_limits_metric = CounterMetricFamily("project_total_cpu_limits", "Total Project CPU limits", labels=['projectTotalCPULimits'])
+        project_total_cpu_limits_metric.add(['projectTotalCPULimits'], project_total_cpu_limits)
+        yield project_total_cpu_limits_metric
+
+        project_total_memory_limits_metric = CounterMetricFamily("project_total_memory_limits", "Total Project Memory limits", labels=['projectTotalMemoryLimits'])
+        project_total_memory_limits_metric.add(['projectTotalMemoryLimits'], project_total_memory_limits)
+        yield project_total_memory_limits_metric
+
+        project_total_cpu_requests_metric = CounterMetricFamily("project_total_CPU_requests", "Total Project CPU requests", labels=['projectTotalCPURequests'])
+        project_total_cpu_requests_metric.add(['projectTotalCPURequests'], project_total_cpu_requests)
+        yield project_total_cpu_requests_metric
+
+        project_total_memory_requests_metric = CounterMetricFamily("project_total_memory_requests", "Total Project memory requests", labels=['projectTotalMemoryRequests'])
+        project_total_memory_requests_metric.add(['projectTotalMemoryRequests'], project_total_memory_requests)
+        yield project_total_memory_requests_metric
+
+        project_total_cpu_usage_metric = CounterMetricFamily("project_total_cpu_usage", "Total Project CPU usage", labels=['projectTotalCPUUsage'])
+        project_total_cpu_usage_metric.add(['projectTotalCPUUsage'], project_total_cpu_usage)
+        yield project_total_cpu_usage_metric
+
+        project_total_memory_usage_metric = CounterMetricFamily("project_total_memory_usage", "Total Project memory usage", labels=['projectTotalMemoryUsage'])
+        project_total_memory_usage_metric.add(['projectTotalMemoryUsage'], project_total_memory_usage)
+        yield project_total_memory_usage_metric
+
+        project_total_runtimes_metric = CounterMetricFamily("project_total_runtimes", "Total Project runtimes", labels=['projectTotalRuntimes'])
+        project_total_runtimes_metric.add(['projectTotalRuntimes'], project_total_runtime)
+        yield project_total_runtimes_metric
 
 
 if __name__ == "__main__":

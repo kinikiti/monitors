@@ -91,7 +91,7 @@ def main():
                 project_total_cpu_requests += pod_cpu_requests
                 project_total_memory_requests += pod_memory_requests
                 project_total_memory_usage += pod_memory_usage
-                project_total_cpu_usage += project_total_cpu_usage
+                project_total_cpu_usage += pod_cpu_usage
 
                 key_deployment = pod['metadata']['name'][0:-14]
                 deployment_resources = deployments[key_deployment].spec.template.spec.containers[0].resources
