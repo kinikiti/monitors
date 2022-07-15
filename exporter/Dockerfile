@@ -12,9 +12,7 @@ RUN pip install -r requirements.txt \
     && mv cpdctl /opt/app-root/bin \
     && chmod +x /opt/app-root/bin/cpdctl
 
-COPY scripts/exporter.py /exporter
-
-WORKDIR /exporter
+WORKDIR /cp4d-monitoring-scripts
 
 USER 1001
 ENTRYPOINT [ "sh", "./run_scripts.sh" ]
