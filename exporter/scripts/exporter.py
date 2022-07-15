@@ -3,7 +3,7 @@ from os import path
 import yaml
 from prometheus_client.core import REGISTRY, CounterMetricFamily
 from prometheus_client import start_http_server
-from exporter.lib import cp4d_monitor, k8s
+from lib import cp4d_monitor, k8s
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import json
