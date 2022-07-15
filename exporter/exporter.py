@@ -70,6 +70,7 @@ class RandomNumberCollector(object):
 
         active_jobs = CounterMetricFamily("active_jobs_count", "Active jobs at the platform", labels=['activeJobsCount'])
         active_jobs.add_metric(['activeJobsCount'], watsonstudio_active_jobs_overall_count)
+        yield active_jobs
 
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
