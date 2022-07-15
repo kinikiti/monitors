@@ -38,6 +38,8 @@ class RandomNumberCollector(object):
 
     def collect(self):
 
+        projects = cp4d_monitor.get_project_list()
+
         cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
         cp4d_platform_global_connections_request = cp4d_monitor.get_all_available_connections_response(cp4d_catalog_id)
         if cp4d_platform_global_connections_request.status_code == 200:
@@ -48,11 +50,12 @@ class RandomNumberCollector(object):
         count.add_metric(['connectionCount'], connection_count)
         yield count
 
-        projects = cp4d_monitor.get_project_list()
-        jobs = cp4d_monitor.get_jobs_list(projects)
 
-        print(projects)
-        print(jobs)
+        jobs = cp4d_monitor.get_jobs_list(projects)
+        jobs = CounterMetricFamily("jobs_count", "Jobs at the platform", labels=['jobsCount'])
+        jobs.add_metric(['jobsCount'], jobs["total_rows"])
+        yield jobs
+
 
 
 if __name__ == "__main__":
