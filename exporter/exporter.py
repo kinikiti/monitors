@@ -52,8 +52,11 @@ class RandomNumberCollector(object):
 
 
         jobs_list = cp4d_monitor.get_jobs_list(projects)
+        total_jobs = 0
+        for project in projects:
+            total_jobs += jobs_list[project]["total_rows"]
         jobs = CounterMetricFamily("jobs_count", "Jobs at the platform", labels=['jobsCount'])
-        jobs.add_metric(['jobsCount'], jobs_list["total_rows"])
+        jobs.add_metric(['jobsCount'], total_jobs)
         yield jobs
 
 
