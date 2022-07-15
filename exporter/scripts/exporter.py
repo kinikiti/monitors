@@ -102,7 +102,7 @@ class RandomNumberCollector(object):
                     pod_cpu_requests = convert_cpu_unit(deployment_resources.requests['cpu'])
                     pod_memory_limits = convert_memory_unit(deployment_resources.limits['memory'])
                     pod_memory_requests = convert_memory_unit(deployment_resources.requests['memory'])
-                    pod_memory_usage = convert_memory_unit(pod['containers'][1]['usage']['memory'])
+                    pod_memory_usage = convert_memory_unit(pod['containers'][0]['usage']['memory'])
 
                     project_total_cpu_limits += pod_cpu_limits
                     project_total_memory_limits += pod_memory_limits
