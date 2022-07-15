@@ -272,3 +272,9 @@ def test_connection_response(resource_id, cp4d_catalog_id):
     cp4d_platform_test_connection_request = requests.put(cp4d_platform_test_connection_url, headers=headers_nginx,
                                                          verify=False, data=cp4d_platform_test_connection_request_data)
     return cp4d_platform_test_connection_request
+
+def get_deployment(label_selector):
+    return k8s.get_deployment(namespace=namespace, label_selector=label_selector)
+
+def get_pod_usage(label_selector):
+    return k8s.get_pod_usage(namespace=namespace,label_selector=label_selector)
