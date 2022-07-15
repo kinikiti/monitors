@@ -125,31 +125,31 @@ class RandomNumberCollector(object):
         yield active_jobs
 
         project_total_cpu_limits_metric = CounterMetricFamily("project_total_cpu_limits", "Total Project CPU limits", labels=['projectTotalCPULimits'])
-        project_total_cpu_limits_metric.add(['projectTotalCPULimits'], project_total_cpu_limits)
+        project_total_cpu_limits_metric.add_metric(['projectTotalCPULimits'], project_total_cpu_limits)
         yield project_total_cpu_limits_metric
 
         project_total_memory_limits_metric = CounterMetricFamily("project_total_memory_limits", "Total Project Memory limits", labels=['projectTotalMemoryLimits'])
-        project_total_memory_limits_metric.add(['projectTotalMemoryLimits'], project_total_memory_limits)
+        project_total_memory_limits_metric.add_metric(['projectTotalMemoryLimits'], project_total_memory_limits)
         yield project_total_memory_limits_metric
 
         project_total_cpu_requests_metric = CounterMetricFamily("project_total_CPU_requests", "Total Project CPU requests", labels=['projectTotalCPURequests'])
-        project_total_cpu_requests_metric.add(['projectTotalCPURequests'], project_total_cpu_requests)
+        project_total_cpu_requests_metric.add_metric(['projectTotalCPURequests'], project_total_cpu_requests)
         yield project_total_cpu_requests_metric
 
         project_total_memory_requests_metric = CounterMetricFamily("project_total_memory_requests", "Total Project memory requests", labels=['projectTotalMemoryRequests'])
-        project_total_memory_requests_metric.add(['projectTotalMemoryRequests'], project_total_memory_requests)
+        project_total_memory_requests_metric.add_metric(['projectTotalMemoryRequests'], project_total_memory_requests)
         yield project_total_memory_requests_metric
 
         project_total_cpu_usage_metric = CounterMetricFamily("project_total_cpu_usage", "Total Project CPU usage", labels=['projectTotalCPUUsage'])
-        project_total_cpu_usage_metric.add(['projectTotalCPUUsage'], project_total_cpu_usage)
+        project_total_cpu_usage_metric.add_metric(['projectTotalCPUUsage'], project_total_cpu_usage)
         yield project_total_cpu_usage_metric
 
         project_total_memory_usage_metric = CounterMetricFamily("project_total_memory_usage", "Total Project memory usage", labels=['projectTotalMemoryUsage'])
-        project_total_memory_usage_metric.add(['projectTotalMemoryUsage'], project_total_memory_usage)
+        project_total_memory_usage_metric.add_metric(['projectTotalMemoryUsage'], project_total_memory_usage)
         yield project_total_memory_usage_metric
 
         project_total_runtimes_metric = CounterMetricFamily("project_total_runtimes", "Total Project runtimes", labels=['projectTotalRuntimes'])
-        project_total_runtimes_metric.add(['projectTotalRuntimes'], project_total_runtime)
+        project_total_runtimes_metric.add_metric(['projectTotalRuntimes'], project_total_runtime)
         yield project_total_runtimes_metric
 
 
