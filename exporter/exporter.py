@@ -11,7 +11,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import json
 
 
-def get_admin_token(admin_pass='password',cp4d_host='https://ibm-nginx-svc'):
+def get_admin_token(admin_pass='password', cp4d_host='https://ibm-nginx-svc'):
     headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
     data = {"username": "admin", "password": admin_pass}
     auth_api = cp4d_host + "/icp4d-api/v1/authorize"
@@ -27,13 +27,14 @@ def get_admin_token(admin_pass='password',cp4d_host='https://ibm-nginx-svc'):
     admin_token = json.loads(res.text)['token']
     return str('Bearer ' + admin_token)
 
+
 class RandomNumberCollector(object):
     def __init__(self, namespace='cpd', host='https://ibm-nginx-svc'):
         self.namespace = namespace
-        self.token = get_admin_token(k8s.get_admin_secret(self.namespace),host)
+        print(host)
+        self.token = get_admin_token(k8s.get_admin_secret(self.namespace), host)
         self.cp4d_host = host
         pass
-
 
     def collect(self):
         projects = cp4d_monitor.get_project_list()
