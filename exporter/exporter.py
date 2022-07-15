@@ -102,6 +102,8 @@ class RandomNumberCollector(object):
             labels = 'icpdsupport/projectId={},runtime=true'.format(project['metadata']['guid'])
             pods = cp4d_monitor.get_pod_usage(label_selector=labels)
 
+            print(pods)
+
             app_labels = 'dsxProjectId={}'.format(project['metadata']['guid'])
             deployments = cp4d_monitor.get_deployment(label_selector=app_labels)
 
@@ -127,10 +129,6 @@ class RandomNumberCollector(object):
 
                     key_deployment = pod['metadata']['name'][0:-14]
                     deployment_resources = deployments[key_deployment].spec.template.spec.containers[0].resources
-        print(pod_cpu_usage)
-        print(pod_cpu_limits)
-        print(project_total_cpu_limits)
-        print(project_total_memory_limits)
 
 
 if __name__ == "__main__":
