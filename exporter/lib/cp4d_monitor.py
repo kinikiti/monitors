@@ -220,7 +220,6 @@ def get_asset_catalog_id():
     headers_nginx = {'Content-Type': 'application/json', 'Accept': 'application/json',
                      'Authorization': str(bearer_token)}
     cp4d_platform_asset_catalog_url = cp4d_host + '/v2/catalogs?entity.name=Platform%20assets%20catalog'
-    print(cp4d_platform_asset_catalog_url)
     cp4d_platform_asset_catalog_request = requests.get(cp4d_platform_asset_catalog_url, headers=headers_nginx,
                                                        verify=False)
     if cp4d_platform_asset_catalog_request.status_code != 200:
