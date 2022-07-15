@@ -31,7 +31,6 @@ def get_admin_token(admin_pass='password', cp4d_host='https://ibm-nginx-svc'):
 class RandomNumberCollector(object):
     def __init__(self, namespace='cpd', host='https://ibm-nginx-svc'):
         self.namespace = namespace
-        print(host)
         self.token = get_admin_token(k8s.get_admin_secret(self.namespace), host)
         self.cp4d_host = host
         pass
@@ -54,7 +53,8 @@ class RandomNumberCollector(object):
         jobs_list = cp4d_monitor.get_jobs_list(projects)
         total_jobs = 0
         for project in projects:
-            total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
+            if project['metadata']['guid'] in jobs_list.keys():
+                total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
         jobs = CounterMetricFamily("jobs_count", "Jobs at the platform", labels=['jobsCount'])
         jobs.add_metric(['jobsCount'], total_jobs)
         yield jobs
