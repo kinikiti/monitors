@@ -155,7 +155,7 @@ if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
     port = 9000
-    frequency = os.environ.get('ICPD_SCRAPE_INTERVAL')
+    frequency = int(os.environ.get('ICPD_SCRAPE_INTERVAL'))
 
     start_http_server(port)
     REGISTRY.register(RandomNumberCollector())
