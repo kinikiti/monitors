@@ -1,5 +1,5 @@
 import time
-from os import path
+import os
 import yaml
 from prometheus_client.core import REGISTRY, CounterMetricFamily
 from prometheus_client import start_http_server
