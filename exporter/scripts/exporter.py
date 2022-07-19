@@ -155,15 +155,7 @@ if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
     port = 9000
-    frequency = 10
-    if path.exists('config.yml'):
-        with open('config.yml', 'r') as config_file:
-            try:
-                config = yaml.safe_load(config_file)
-                port = int(config['port'])
-                frequency = config['scrape_frequency']
-            except yaml.YAMLError as error:
-                print(error)
+    frequency = os.environ.get('ICPD_SCRAPE_INTERVAL')
 
     start_http_server(port)
     REGISTRY.register(RandomNumberCollector())
