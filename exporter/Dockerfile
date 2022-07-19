@@ -14,7 +14,5 @@ RUN pip install -r requirements.txt \
 
 WORKDIR /cp4d-monitoring-scripts
 
-USER 1001
+USER 1000321000
 ENTRYPOINT [ "sh", "./run_scripts.sh" ]
-
-
