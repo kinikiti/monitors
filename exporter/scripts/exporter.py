@@ -166,7 +166,7 @@ if __name__ == "__main__":
                 print(error)
 
     start_http_server(port)
-    REGISTRY.register(RandomNumberCollector(host='https://bdap.socialsecurity.be/'))
+    REGISTRY.register(RandomNumberCollector())
     while True:
         # period between collection
         time.sleep(frequency)
