@@ -105,7 +105,7 @@ cache_folder = '/user-home/_global_/monitors'
 Path(cache_folder).mkdir(parents=True, exist_ok=True)
 projects_cache_file = cache_folder + '/projects.json'
 jobs_cache_file = cache_folder + '/jobs.json'
-namespace = 'cpd'
+namespace=os.environ.get('ICPD_CONTROLPLANE_NAMESPACE')
 if namespace is None:
     print("Unable to read from expected environment variable ICPD_CONTROLPLANE_NAMESPACE")
     exit(1)
