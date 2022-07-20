@@ -2,7 +2,7 @@ import time
 import os
 import yaml
 from prometheus_client.core import REGISTRY, CounterMetricFamily
-from prometheus_client import start_http_server
+from prometheus_client import start_http_server, push_to_gateway
 from lib import cp4d_monitor, k8s
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -42,7 +42,7 @@ def convert_memory_unit(memory):
     return memory
 
 
-class RandomNumberCollector(object):
+class CP4DCollector(object):
     def __init__(self, namespace='cpd', host='https://ibm-nginx-svc'):
         self.namespace = namespace
         self.token = get_admin_token(k8s.get_admin_secret(self.namespace), host)
@@ -65,12 +65,10 @@ class RandomNumberCollector(object):
 
         projects = cp4d_monitor.get_project_list()
 
-        #cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
-        #cp4d_platform_global_connections_request = cp4d_monitor.get_all_available_connections_response(cp4d_catalog_id)
-        #if cp4d_platform_global_connections_request.status_code == 200:
-        #    connection_count = cp4d_platform_global_connections_request.json()["total_count"]
-        #else:
-        #    connection_count = 0
+        cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
+        cp4d_platform_global_connections_request = cp4d_monitor.get_all_available_connections_response(cp4d_catalog_id)
+        if cp4d_platform_global_connections_request.status_code == 200:
+            connection_count = cp4d_platform_global_connections_request.json()["total_count"]
 
         jobs_list = cp4d_monitor.get_jobs_list(projects)
 
@@ -168,7 +166,9 @@ if __name__ == "__main__":
 
     cp4durl = os.environ.get('ICPD_URL')
     if cp4durl is None: cp4durl = 'https://ibm-nginx-svc'
-    REGISTRY.register(RandomNumberCollector(host = cp4durl))
+    REGISTRY.register(CP4DCollector(host = cp4durl))
+  
     while True:
         # period between collection
         time.sleep(frequency)
+        push_to_gateway(''pushgateway-service, job='CP4D', registry=REGISTRY)
