@@ -114,7 +114,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 admin_pass =k8s.get_admin_secret(namespace)
 
 cp4d_host = os.environ.get('ICPD_URL')
-if cp4d_host is None: cp4d_hosturl = 'https://ibm-nginx-svc'
+if cp4d_host is None: cp4d_host = 'https://ibm-nginx-svc'
 
 k8s.check_ccs_svc(namespace)
 cpdctl.cpdctl_init_config_context('admin', admin_pass, cp4d_host)
