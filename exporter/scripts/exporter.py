@@ -73,6 +73,8 @@ class RandomNumberCollector(object):
 
         jobs_list = cp4d_monitor.get_jobs_list(projects)
 
+        print('Metric collection started at {}'.format(time.strftime("%H:%M:%S", time.localtime())))
+
         for project in projects:
             if project['metadata']['guid'] in jobs_list.keys():
                 project_jobs = jobs_list[project['metadata']['guid']]['results']
