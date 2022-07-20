@@ -171,4 +171,4 @@ if __name__ == "__main__":
     while True:
         # period between collection
         time.sleep(frequency)
-        push_to_gateway('pushgateway-service', job='CP4D', registry=REGISTRY)
+        push_to_gateway('pushgateway-service:9091', job='CP4D', registry=REGISTRY)
