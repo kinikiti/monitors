@@ -61,6 +61,8 @@ class RandomNumberCollector(object):
         project_total_cpu_usage = 0
         total_jobs = 0
         watsonstudio_active_jobs_overall_count = 0
+        
+        print('Empty metric collection started at {}'.format(time.strftime("%H:%M:%S", time.localtime())))
 
         count = CounterMetricFamily("connections_count", "Platform connection counts", labels=['connectionCount'])
         count.add_metric(['connectionCount'], connection_count)
