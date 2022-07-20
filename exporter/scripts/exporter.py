@@ -61,15 +61,16 @@ class RandomNumberCollector(object):
         project_total_cpu_usage = 0
         total_jobs = 0
         watsonstudio_active_jobs_overall_count = 0
+        connection_count = 0
 
         projects = cp4d_monitor.get_project_list()
 
-        cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
-        cp4d_platform_global_connections_request = cp4d_monitor.get_all_available_connections_response(cp4d_catalog_id)
-        if cp4d_platform_global_connections_request.status_code == 200:
-            connection_count = cp4d_platform_global_connections_request.json()["total_count"]
-        else:
-            connection_count = 0
+        #cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
+        #cp4d_platform_global_connections_request = cp4d_monitor.get_all_available_connections_response(cp4d_catalog_id)
+        #if cp4d_platform_global_connections_request.status_code == 200:
+        #    connection_count = cp4d_platform_global_connections_request.json()["total_count"]
+        #else:
+        #    connection_count = 0
 
         jobs_list = cp4d_monitor.get_jobs_list(projects)
 
@@ -152,15 +153,22 @@ class RandomNumberCollector(object):
         project_total_runtimes_metric.add_metric(['projectTotalRuntimes'], project_total_runtime)
         yield project_total_runtimes_metric
 
+        print('Metric collection ended at {}'.format(time.strftime("%H:%M:%S", time.localtime())))
 
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
     port = 9000
-    frequency = int(os.environ.get('ICPD_SCRAPE_INTERVAL'))
+   
+    freq = os.environ.get('ICPD_SCRAPE_INTERVAL')
+    if freq is None: 
+        frequency = 10
+    else:
+        frequency = int(freq)
 
-    start_http_server(port)
-    REGISTRY.register(RandomNumberCollector())
+    cp4durl = os.environ.get('ICPD_URL')
+    if cp4durl is None: cp4durl = 'https://ibm-nginx-svc'
+    REGISTRY.register(RandomNumberCollector(host = cp4durl))
     while True:
         # period between collection
         time.sleep(frequency)
