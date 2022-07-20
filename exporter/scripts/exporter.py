@@ -61,9 +61,56 @@ class RandomNumberCollector(object):
         project_total_cpu_usage = 0
         total_jobs = 0
         watsonstudio_active_jobs_overall_count = 0
-        connection_count = 0
-        
-        print('Empty metric collection started at {}'.format(time.strftime("%H:%M:%S", time.localtime())))
+
+        projects = cp4d_monitor.get_project_list()
+
+        cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()
+        cp4d_platform_global_connections_request = cp4d_monitor.get_all_available_connections_response(cp4d_catalog_id)
+        if cp4d_platform_global_connections_request.status_code == 200:
+            connection_count = cp4d_platform_global_connections_request.json()["total_count"]
+        else:
+            connection_count = 0
+
+        jobs_list = cp4d_monitor.get_jobs_list(projects)
+
+        print('Metric collection started at {}'.format(time.strftime("%H:%M:%S", time.localtime())))
+
+        for project in projects:
+            if project['metadata']['guid'] in jobs_list.keys():
+                project_jobs = jobs_list[project['metadata']['guid']]['results']
+                for job in project_jobs:
+                    runs = cp4d_monitor.get_job_run_info(project_id=project['metadata']['guid'], job_id=job['metadata']['asset_id'])
+                    if len(runs) == 0:
+                        continue
+                    run = runs[0]
+                    if run["entity"]["job_run"]["state"] == "Running": watsonstudio_active_jobs_overall_count += 1
+                total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
+
+            labels = 'icpdsupport/projectId={},runtime=true'.format(project['metadata']['guid'])
+            pods = cp4d_monitor.get_pod_usage(label_selector=labels)
+
+            app_labels = 'dsxProjectId={}'.format(project['metadata']['guid'])
+            deployments = cp4d_monitor.get_deployment(label_selector=app_labels)
+
+            if len(pods) > 0:
+                total_runtime += 1
+                for pod in pods:
+                    project_total_runtime = +1
+                    key_deployment = pod['containers'][0]['name'][:-2]
+                    deployment_resources = deployments[key_deployment].spec.template.spec.containers[0].resources
+                    pod_cpu_usage = convert_cpu_unit(pod['containers'][0]['usage']['cpu'])
+                    pod_cpu_limits = convert_cpu_unit(deployment_resources.limits['cpu'])
+                    pod_cpu_requests = convert_cpu_unit(deployment_resources.requests['cpu'])
+                    pod_memory_limits = convert_memory_unit(deployment_resources.limits['memory'])
+                    pod_memory_requests = convert_memory_unit(deployment_resources.requests['memory'])
+                    pod_memory_usage = convert_memory_unit(pod['containers'][0]['usage']['memory'])
+
+                    project_total_cpu_limits += pod_cpu_limits
+                    project_total_memory_limits += pod_memory_limits
+                    project_total_cpu_requests += pod_cpu_requests
+                    project_total_memory_requests += pod_memory_requests
+                    project_total_memory_usage += pod_memory_usage
+                    project_total_cpu_usage += pod_cpu_usage
 
         count = CounterMetricFamily("connections_count", "Platform connection counts", labels=['connectionCount'])
         count.add_metric(['connectionCount'], connection_count)
