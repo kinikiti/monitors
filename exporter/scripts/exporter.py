@@ -234,8 +234,6 @@ class CP4DCollector(object):
 if __name__ == "__main__":
     requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-    port = 9000
-
     freq = os.environ.get('ICPD_SCRAPE_INTERVAL')
     if freq is None:
         frequency = 10
@@ -243,7 +241,8 @@ if __name__ == "__main__":
         frequency = int(freq)
 
     cp4durl = os.environ.get('ICPD_URL')
-    if cp4durl is None: cp4durl = 'https://ibm-nginx-svc'
+    if cp4durl is None:
+        cp4durl = 'https://ibm-nginx-svc'
     REGISTRY.register(CP4DCollector(host=cp4durl))
 
     while True:
