@@ -101,10 +101,14 @@ project_last_refresh_key = 'cp4d-project-last-refresh'
 project_refresh_interval_key = 'cp4d-project-refresh-interval-minutes'
 jobs_last_refresh_key = 'cp4d-job-last-refresh'
 jobs_last_refresh_interval_key = 'cp4d-job-refresh-interval-minutes'
+wkc_last_refresh_key='cp4d-wkc-last-refresh'
+wkc_last_refresh_interval_key='cp4d-wkc-refresh-interval-minutes'
+
 cache_folder = '/user-home/_global_/monitors'
 Path(cache_folder).mkdir(parents=True, exist_ok=True)
 projects_cache_file = cache_folder + '/projects.json'
 jobs_cache_file = cache_folder + '/jobs.json'
+wkc_cache_file = cache_folder+'/wkc.json'
 namespace=os.environ.get('ICPD_CONTROLPLANE_NAMESPACE')
 if namespace is None:
     print("Unable to read from expected environment variable ICPD_CONTROLPLANE_NAMESPACE")
@@ -276,8 +280,44 @@ def test_connection_response(resource_id, cp4d_catalog_id):
                                                          verify=False, data=cp4d_platform_test_connection_request_data)
     return cp4d_platform_test_connection_request
 
+
 def get_deployment(label_selector):
     return k8s.get_deployment(namespace=namespace, label_selector=label_selector)
 
+
 def get_pod_usage(label_selector):
     return k8s.get_pod_usage(namespace=namespace,label_selector=label_selector)
+
+
+def get_waston_knowledge_catalogs():
+    bearer_token = get_admin_token()
+    headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': str(bearer_token)}
+    url = cp4d_host + '/v2/catalogs'
+    wkc_res = requests.get(url, headers=headers, verify=False)
+    if wkc_res.status_code != 200:
+        print('Error requesting get waston knowledge catalogs - status_code - ' + str(wkc_res.status_code))
+        try:
+            print(wkc_res.json())
+        except Exception:
+            print(wkc_res.text)
+        return []
+    return json.loads(wkc_res.text)['catalogs']
+
+
+def get_waston_knowledge_catalogs_in_cache():
+    wkc = []
+    cacheconfig = k8s.get_config_map(namespace=namespace, name=configmap_name)
+    wkc_fetch_interval = float(cacheconfig[wkc_last_refresh_interval_key])
+    last_fetch_timestamp = float(cacheconfig[wkc_last_refresh_key])
+    if need_to_fetch(wkc_fetch_interval, last_fetch_timestamp) == True or not os.path.exists(wkc_cache_file):
+        wkc = get_waston_knowledge_catalogs()
+        with open(wkc_cache_file, 'w') as f:
+            f.write(json.dumps(wkc))
+
+        cacheconfig[wkc_last_refresh_key] = str(get_current_timestamp())
+        k8s.set_config_map(namespace=namespace, name=configmap_name, data=cacheconfig)
+        return wkc
+
+    with open(wkc_cache_file, 'r') as f:
+        wkc = json.loads(f.read())
+    return wkc

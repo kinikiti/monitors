@@ -111,6 +111,17 @@ class CP4DCollector(object):
                     project_total_memory_usage += pod_memory_usage
                     project_total_cpu_usage += pod_cpu_usage
 
+        wkcs = cp4d_monitor.get_waston_knowledge_catalogs()
+        cp4d_wkc_info_catalog_overall_count = 0
+        cp4d_wkc_info_catalog_asset_count = 0
+
+        for wkc in wkcs:
+            cp4d_wkc_info_catalog_overall_count = +1
+
+            catalog_id = wkc['metadata']['guid']
+            assets = cp4d_monitor.get_assets_by_catalog(catalog_id)
+            cp4d_wkc_info_catalog_asset_count = assets['total_rows']
+
         count = CounterMetricFamily("connections_count", "Platform connection counts", labels=['connectionCount'])
         count.add_metric(['connectionCount'], connection_count)
         yield count
@@ -150,6 +161,14 @@ class CP4DCollector(object):
         project_total_runtimes_metric = CounterMetricFamily("project_total_runtimes", "Total Project runtimes", labels=['projectTotalRuntimes'])
         project_total_runtimes_metric.add_metric(['projectTotalRuntimes'], project_total_runtime)
         yield project_total_runtimes_metric
+
+        cp4d_wkc_info_catalog_overall_count_metric = CounterMetricFamily("wkc_info_catalog_overall_count", "Total WKC overall count", labels=['wkcInfoCatalogOverallCount'])
+        cp4d_wkc_info_catalog_overall_count_metric.add_metric(['wkcInfoCatalogOverallCount'], cp4d_wkc_info_catalog_overall_count)
+        yield cp4d_wkc_info_catalog_overall_count_metric
+
+        cp4d_wkc_info_catalog_asset_count_metric = CounterMetricFamily("wkc_info_catalog_asset_count", "Total WKC assets count", labels=['wkcInfoCatalogAssetCount'])
+        cp4d_wkc_info_catalog_asset_count_metric.add_metric(['wkcInfoCatalogOverallCount'], cp4d_wkc_info_catalog_asset_count)
+        yield cp4d_wkc_info_catalog_asset_count_metric
 
         print('Metric collection ended at {}'.format(time.strftime("%H:%M:%S", time.localtime())))
 
