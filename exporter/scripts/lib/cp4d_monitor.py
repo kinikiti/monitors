@@ -8,86 +8,6 @@ from lib import k8s
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 
-def create_and_validate_type(value):
-    # Replace all <SPACE> with _
-    new_value = value.replace(" ", "_")
-    # Replace all - with _
-    new_value = new_value.replace("-", "_")
-
-    return new_value
-
-
-def post_events(events):
-    # configure post request and set secret headers
-    url = 'https://zen-watchdog-svc:4444/zen-watchdog/v1/monitoring/events'
-    with open('/var/run/sharedsecrets/token', 'r') as file:
-        secret_header = file.read().replace('\n', '')
-    headers = {'Content-type': 'application/json', 'secret': secret_header}
-
-    # Prepare events for post
-    json_string = json.dumps(events)
-
-    print("Sending events to zen-watchdog:")
-    print(json_string)
-
-    # post call to zen-watchdog to record events
-    r = requests.post(url, headers=headers, data=json_string, verify=False)
-    # print the results
-    print("Response status_code: {}".format(r.status_code))
-    print("Response content: {}".format(r.text))
-
-
-def get_internal_service_token():
-    service_broker_secret = get_secret_header_token()
-    if service_broker_secret is None:
-        print('could not find zen-service-broker-secret environment variable')
-        return None
-
-    url = 'https://zen-core-api-svc:4444/internal/v1/service_token'
-    headers = {
-        'secret': service_broker_secret
-    }
-    # include `verify=False` as the final argument to by-pass certificate verification
-    r = requests.get(url, headers=headers, verify=False)
-    if r.status_code != 200:
-        print('Error requesting internal_service_token - status_code - ' + str(r.status_code))
-        try:
-            print(r.json())
-        except Exception:
-            print(r.text)
-
-        return None
-    else:
-        print('Successfully requested internal_service_token - status_code - 200')
-        try:
-            resp = r.json()
-            if resp['token']:
-                bearer_token = 'Bearer ' + resp['token']
-                return str(bearer_token)
-            else:
-                print('could not parse internal_service_token from the response')
-                return None
-        except Exception:
-            print('could not parse internal_service_token from the response')
-            return None
-
-
-def get_secret_header_token():
-    secret_header = None
-
-    with open('/var/run/sharedsecrets/token', 'r') as file:
-        secret_header = file.read().replace('\n', '')
-
-    return secret_header
-
-
-def get_current_namespace():
-    with open('/var/run/secrets/kubernetes.io/serviceaccount/namespace', 'r') as file:
-        namespace_name = file.read().replace('\n', '')
-
-    return namespace_name
-
-
 def get_current_timestamp():
     return datetime.datetime.now().timestamp()
 
@@ -122,7 +42,8 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 admin_pass = k8s.get_admin_secret(namespace)
 
 cp4d_host = os.environ.get('ICPD_URL')
-if cp4d_host is None: cp4d_host = 'https://ibm-nginx-svc'
+if cp4d_host is None:
+    cp4d_host = 'https://ibm-nginx-svc'
 
 k8s.check_ccs_svc(namespace)
 cpdctl.cpdctl_init_config_context('admin', admin_pass, cp4d_host)
@@ -381,7 +302,7 @@ def get_deployments(space_id):
 
 
 def cpctl_get_spaces(context_name="default"):
-    spaces = cmd_execute(command='cpdctl', parameters=f'space list')
+    spaces = cpdctl.cmd_execute(command='cpdctl', parameters=f'space list')
     if 'status' in spaces and spaces['status'] == 'error':
         print("Got error to list spaces.")
         return None

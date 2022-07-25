@@ -1,29 +1,10 @@
 import time
 import os
-import yaml
 from prometheus_client.core import REGISTRY, CounterMetricFamily
 from prometheus_client import start_http_server, push_to_gateway
-from lib import cp4d_monitor, k8s
+from lib import cp4d_monitor
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-import json
-
-
-def get_admin_token(admin_pass='password', cp4d_host='https://ibm-nginx-svc'):
-    headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-    data = {"username": "admin", "password": admin_pass}
-    auth_api = cp4d_host + "/icp4d-api/v1/authorize"
-    res = requests.post(auth_api, verify=False, headers=headers, json=data)
-    if res.status_code != 200:
-        print('Error requesting admin token - status_code - ' + str(res.status_code))
-        try:
-            print(res.json())
-        except Exception:
-            print(res.text)
-        exit(1)
-
-    admin_token = json.loads(res.text)['token']
-    return str('Bearer ' + admin_token)
 
 
 def convert_cpu_unit(cpu):
@@ -45,12 +26,10 @@ def convert_memory_unit(memory):
 class CP4DCollector(object):
     def __init__(self, namespace='cpd', host='https://ibm-nginx-svc'):
         self.namespace = namespace
-        self.token = get_admin_token(k8s.get_admin_secret(self.namespace), host)
         self.cp4d_host = host
         pass
 
     def collect(self):
-
         total_runtime = 0
         project_total_runtime = 0
         project_total_cpu_limits = 0
@@ -91,7 +70,8 @@ class CP4DCollector(object):
                     if len(runs) == 0:
                         continue
                     run = runs[0]
-                    if run["entity"]["job_run"]["state"] == "Running": watsonstudio_active_jobs_overall_count += 1
+                    if run["entity"]["job_run"]["state"] == "Running":
+                        watsonstudio_active_jobs_overall_count += 1
                 total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
 
             labels = 'icpdsupport/projectId={},runtime=true'.format(project['metadata']['guid'])
