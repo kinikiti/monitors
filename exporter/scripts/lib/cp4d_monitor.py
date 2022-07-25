@@ -103,12 +103,16 @@ jobs_last_refresh_key = 'cp4d-job-last-refresh'
 jobs_last_refresh_interval_key = 'cp4d-job-refresh-interval-minutes'
 wkc_last_refresh_key = 'cp4d-wkc-last-refresh'
 wkc_last_refresh_interval_key = 'cp4d-wkc-refresh-interval-minutes'
+spaces_last_refresh_key = 'cp4d-space-last-refresh'
+spaces_refresh_interval_key = 'cp4d-space-refresh-interval-minutes'
 
 cache_folder = '/user-home/_global_/monitors'
 Path(cache_folder).mkdir(parents=True, exist_ok=True)
 projects_cache_file = cache_folder + '/projects.json'
 jobs_cache_file = cache_folder + '/jobs.json'
 wkc_cache_file = cache_folder + '/wkc.json'
+spaces_cache_file = cache_folder + '/spaces.json'
+
 namespace = os.environ.get('ICPD_CONTROLPLANE_NAMESPACE')
 if namespace is None:
     print("Unable to read from expected environment variable ICPD_CONTROLPLANE_NAMESPACE")
@@ -326,7 +330,7 @@ def get_waston_knowledge_catalogs_in_cache():
 def get_assets_by_catalog(catalog_id):
     bearer_token = get_admin_token()
     headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': str(bearer_token)}
-    payload={"query":"*:*","limit":200}
+    payload = {"query": "*:*", "limit": 200}
     url = cp4d_host + f'/v2/asset_types/asset/search?catalog_id={catalog_id}'
     assets_res = requests.post(url, headers=headers, verify=False, json=payload)
     if assets_res.status_code != 200:
@@ -337,3 +341,40 @@ def get_assets_by_catalog(catalog_id):
             print(assets_res.text)
         return []
     return json.loads(assets_res.text)
+
+
+def get_spaces_list():
+    spaces = []
+    cacheconfig = k8s.get_config_map(namespace=namespace, name=configmap_name)
+    spaces_fetch_interval = float(cacheconfig[spaces_refresh_interval_key])
+    last_fetch_timestamp = float(cacheconfig[spaces_last_refresh_key])
+    if need_to_fetch(spaces_fetch_interval, last_fetch_timestamp) or not os.path.exists(spaces_cache_file):
+        spaces_data = cpdctl.cpctl_get_spaces()['resources']
+        if len(spaces_data) > 0:
+            spaces = spaces_data
+        with open(spaces_cache_file, 'w') as f:
+            f.write(json.dumps(spaces))
+        cacheconfig[spaces_last_refresh_key] = str(get_current_timestamp())
+        k8s.set_config_map(namespace=namespace, name=configmap_name, data=cacheconfig)
+        return spaces
+
+    with open(spaces_cache_file, 'r') as f:
+        spaces = json.loads(f.read())
+    return spaces
+
+
+def get_deployments(space_id):
+    bearer_token = get_admin_token()
+    headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': str(bearer_token)}
+    url = cp4d_host + f'/ml/v4/deployments?space_id={space_id}&version=2020-09-01'
+    res = requests.get(url, headers=headers, verify=False)
+    if res.status_code != 200:
+        print('Error requesting get deployment - status_code - ' + str(res.status_code))
+        try:
+            print(res.json())
+        except Exception:
+            print(res.text)
+        return []
+
+    results = json.loads(res.text)
+    return results
