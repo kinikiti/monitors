@@ -82,6 +82,14 @@ def cpdctl_get_job(project_id, job_id, context_name="default"):
     return job
 
 
+def cpctl_get_spaces(context_name="default"):
+    spaces = cmd_execute(command='cpdctl', parameters=f'space list')
+    if 'status' in spaces and spaces['status'] == 'error':
+        print("Got error to list spaces.")
+        return None
+    return spaces
+
+
 if __name__ == '__main__':
     cpdctl_init_config_context('username', 'password', 'CPD-URL')
     result = cpdctl_get_projects()
