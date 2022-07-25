@@ -53,7 +53,7 @@ class CP4DCollector(object):
 
         projects = cp4d_monitor.get_project_list()
         jobs_list = cp4d_monitor.get_jobs_list(projects)
-        wkcs = cp4d_monitor.get_waston_knowledge_catalogs()
+        wkcs = cp4d_monitor.get_waston_knowledge_catalogs_in_cache()
         spaces = cp4d_monitor.get_spaces_list()
 
         cp4d_catalog_id = cp4d_monitor.get_asset_catalog_id()

@@ -54,7 +54,7 @@ def get_project_list():
     cacheconfig = k8s.get_config_map(namespace=namespace, name=configmap_name)
     project_fetch_interval = float(cacheconfig[project_refresh_interval_key])
     last_fetch_timestamp = float(cacheconfig[project_last_refresh_key])
-    if need_to_fetch(project_fetch_interval, last_fetch_timestamp) == True or not os.path.exists(projects_cache_file):
+    if need_to_fetch(project_fetch_interval, last_fetch_timestamp) or not os.path.exists(projects_cache_file):
         project_data = cpdctl.cpdctl_get_projects()
         if project_data['total_results'] > 0:
             projects = project_data['resources']
@@ -75,7 +75,7 @@ def get_jobs_list(projects):
     cacheconfig = k8s.get_config_map(namespace=namespace, name=configmap_name)
     job_fetch_interval = float(cacheconfig[jobs_last_refresh_interval_key])
     last_fetch_timestamp = float(cacheconfig[jobs_last_refresh_key])
-    if need_to_fetch(job_fetch_interval, last_fetch_timestamp) == True or not os.path.exists(jobs_cache_file):
+    if need_to_fetch(job_fetch_interval, last_fetch_timestamp) or not os.path.exists(jobs_cache_file):
         for project in projects:
             project_id = project['metadata']['guid']
             jobs_data = cpdctl.cpdctl_get_jobs(project_id=project_id)
@@ -234,7 +234,7 @@ def get_waston_knowledge_catalogs_in_cache():
     cacheconfig = k8s.get_config_map(namespace=namespace, name=configmap_name)
     wkc_fetch_interval = float(cacheconfig[wkc_last_refresh_interval_key])
     last_fetch_timestamp = float(cacheconfig[wkc_last_refresh_key])
-    if need_to_fetch(wkc_fetch_interval, last_fetch_timestamp) == True or not os.path.exists(wkc_cache_file):
+    if need_to_fetch(wkc_fetch_interval, last_fetch_timestamp) or not os.path.exists(wkc_cache_file):
         wkc = get_waston_knowledge_catalogs()
         with open(wkc_cache_file, 'w') as f:
             f.write(json.dumps(wkc))
