@@ -1,0 +1,14 @@
+kind: ServiceMonitor
+metadata:
+  namespace: cpd
+  labels:
+    k8s-app: cpd-service-monitor
+  name: cpd-exporter
+spec:
+  endpoints:
+    - interval: 30s
+      port: pushgateway
+      scheme: http
+  selector:
+    matchLabels:
+      component: cpd-exporter

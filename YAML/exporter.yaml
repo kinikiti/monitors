@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: exporter-1
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: cpd-exporter
+      labels:
+        app: cpd-exporter
+        component: cpd-exporter
+    spec:
+      containers:
+      - env:
+        - name: ICPD_CONTROLPLANE_NAMESPACE
+          value: cpd
+        - name: ICPD_SCRAPE_INTERVAL
+          value: "30"
+        image: <REGISTRY>/exporter:latest
+        name: exporter
+        ports:
+        - containerPort: 9000
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /user-home
+          name: user-home-mount
+      restartPolicy: Always
+      volumes:
+      - name: user-home-mount
+        persistentVolumeClaim:
+          claimName: user-home-pvc
+      serviceAccount: cpd-editor-sa
+      serviceAccountName: cpd-editor-sa

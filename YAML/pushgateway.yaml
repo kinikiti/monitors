@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pushgateway-deployment
+  labels:
+     app: pushgateway
+spec:
+   replicas: 1
+   selector:
+     matchLabels:
+       app: pushgateway
+       component: cpd-exporter
+   template:
+      metadata:
+         labels:
+           app: pushgateway
+           component: cpd-exporter
+      spec:
+        containers:
+         - name: pushgateway
+           image: prom/pushgateway
+           ports:
+           - containerPort: 9091
+        imagePullSecrets:
+         - name: <PULL SECRET NAMEW>
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: pushgateway-service
+spec:
+  selector:
+    app: pushgateway
+    component: cpd-exporter
+  ports:
+  - name: pushgateway
+    protocol: TCP
+    port: 9091
+    targetPort: 9091
