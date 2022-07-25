@@ -101,21 +101,21 @@ project_last_refresh_key = 'cp4d-project-last-refresh'
 project_refresh_interval_key = 'cp4d-project-refresh-interval-minutes'
 jobs_last_refresh_key = 'cp4d-job-last-refresh'
 jobs_last_refresh_interval_key = 'cp4d-job-refresh-interval-minutes'
-wkc_last_refresh_key='cp4d-wkc-last-refresh'
-wkc_last_refresh_interval_key='cp4d-wkc-refresh-interval-minutes'
+wkc_last_refresh_key = 'cp4d-wkc-last-refresh'
+wkc_last_refresh_interval_key = 'cp4d-wkc-refresh-interval-minutes'
 
 cache_folder = '/user-home/_global_/monitors'
 Path(cache_folder).mkdir(parents=True, exist_ok=True)
 projects_cache_file = cache_folder + '/projects.json'
 jobs_cache_file = cache_folder + '/jobs.json'
-wkc_cache_file = cache_folder+'/wkc.json'
-namespace=os.environ.get('ICPD_CONTROLPLANE_NAMESPACE')
+wkc_cache_file = cache_folder + '/wkc.json'
+namespace = os.environ.get('ICPD_CONTROLPLANE_NAMESPACE')
 if namespace is None:
     print("Unable to read from expected environment variable ICPD_CONTROLPLANE_NAMESPACE")
     exit(1)
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-admin_pass =k8s.get_admin_secret(namespace)
+admin_pass = k8s.get_admin_secret(namespace)
 
 cp4d_host = os.environ.get('ICPD_URL')
 if cp4d_host is None: cp4d_host = 'https://ibm-nginx-svc'
@@ -286,7 +286,7 @@ def get_deployment(label_selector):
 
 
 def get_pod_usage(label_selector):
-    return k8s.get_pod_usage(namespace=namespace,label_selector=label_selector)
+    return k8s.get_pod_usage(namespace=namespace, label_selector=label_selector)
 
 
 def get_waston_knowledge_catalogs():
@@ -321,3 +321,19 @@ def get_waston_knowledge_catalogs_in_cache():
     with open(wkc_cache_file, 'r') as f:
         wkc = json.loads(f.read())
     return wkc
+
+
+def get_assets_by_catalog(catalog_id):
+    bearer_token = get_admin_token()
+    headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': str(bearer_token)}
+    payload={"query":"*:*","limit":200}
+    url = cp4d_host + f'/v2/asset_types/asset/search?catalog_id={catalog_id}'
+    assets_res = requests.post(url, headers=headers, verify=False, json=payload)
+    if assets_res.status_code != 200:
+        print('Error requesting assets by catalog - status_code - ' + str(assets_res.status_code))
+        try:
+            print(assets_res.json())
+        except Exception:
+            print(assets_res.text)
+        return []
+    return json.loads(assets_res.text)
