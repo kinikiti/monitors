@@ -378,3 +378,11 @@ def get_deployments(space_id):
 
     results = json.loads(res.text)
     return results
+
+
+def cpctl_get_spaces(context_name="default"):
+    spaces = cmd_execute(command='cpdctl', parameters=f'space list')
+    if 'status' in spaces and spaces['status'] == 'error':
+        print("Got error to list spaces.")
+        return None
+    return spaces
