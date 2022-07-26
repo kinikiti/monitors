@@ -1,0 +1,583 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_OPENSHIFT_PROMETHEUS",
+      "label": "Openshift Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": [],
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.0.2"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Max values of MEM and CPU usage in the last 24 hours",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+      },
+      "description": "Cores Installed: Number of CPUs s on all the worker  nodes\n\nCores Used: Number of CPUs used by OpenShift pods  on all the worker  nodes\n\nCores Requests: Number of CPUs requested by OpenShift pods  on all the worker  nodes\n\nCores Limits : Maximum  number of CPUs  that can be used by OpenShift pods  on all the worker  nodes\n\n\nWhen you specify the resource request for Containers in a Pod, the scheduler uses this information to decide which node to place the Pod on. \n\nWhen you specify a resource limit for a Container, OpenShift enforces those limits so that the running container is not allowed to use more of that resource than the limit you set.  ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum (machine_cpu_cores{node=~\".+node.+\"})",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Cores Installed",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{node=~\".+node.+\"})",
+          "interval": "",
+          "legendFormat": "Cores Used",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum (kube_pod_container_resource_requests_cpu_cores{node=~\".+node.+\"})",
+          "interval": "",
+          "legendFormat": "Cores Requests",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum (kube_pod_container_resource_limits_cpu_cores{node=~\".+node.+\"})",
+          "interval": "",
+          "legendFormat": "Cores Limits",
+          "refId": "D"
+        }
+      ],
+      "title": "Worker Nodes CPU stats",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+      },
+      "description": "CPU usage in % on worker nodes",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "(\n  instance:node_cpu_utilisation:rate1m{job=\"node-exporter\",instance=~\".+ocnode.+\"}\n*\n  instance:node_num_cpu:sum{job=\"node-exporter\",instance=~\".+ocnode.+\"}\n)\n/ scalar(sum(instance:node_num_cpu:sum{job=\"node-exporter\",instance=~\".+ocnode.+\"}))",
+          "interval": "",
+          "legendFormat": "{{instance}} ",
+          "refId": "A"
+        }
+      ],
+      "title": "Worker Nodes CPU Usage",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+      },
+      "description": "Memory Installed: Amount of RAM on all the worker  nodes\n\nMemory Usage: RAM used by OpenShift pods  on all the worker  nodes\n\nMemory Requests: RAM requested by OpenShift pods  on all the worker  nodes\n\nMemory Limits : Maximum allowed  RAM  that can be used by OpenShift pods  on all the worker  nodes\n\n\nWhen you specify the resource request for Containers in a Pod, the scheduler uses this information to decide which node to place the Pod on. \n\nWhen you specify a resource limit for a Container, OpenShift enforces those limits so that the running container is not allowed to use more of that resource than the limit you set.  ",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum (machine_memory_bytes{node=~\".+node.+\"})",
+          "interval": "",
+          "legendFormat": "Memory Installed",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum(container_memory_rss{node=~\".+node.+\",container!=\"\"})",
+          "interval": "",
+          "legendFormat": "Memory Usage",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{node=~\".+node.+\"})",
+          "interval": "",
+          "legendFormat": "Memory Requests",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "exemplar": true,
+          "expr": "sum(kube_pod_container_resource_limits_memory_bytes{node=~\".+node.+\"})",
+          "interval": "",
+          "legendFormat": "Memory Limits",
+          "refId": "D"
+        }
+      ],
+      "title": "Worker Nodes Memory stats",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+      },
+      "description": "Free RAM in GB on the worker nodes. ",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 7,
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "min"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "node_memory_MemAvailable_bytes{instance=~\".+node.+\"}",
+          "interval": "",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Worker Nodes Memory Available",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+      },
+      "description": "\nCores Used: Number of CPUs used by CloudpackForData  pods  on all the worker  nodes\n\nCores Requests: Number of CPUs requested by CloudpackForData pods  on all the worker  nodes\n\nCores Limits : Maximum  number of CPUs  that can be used by CloudpackForData pods  on all the worker  nodes\n\n\nWhen you specify the resource request for Containers in a Pod, the scheduler uses this information to decide which node to place the Pod on. \n\nWhen you specify a resource limit for a Container, OpenShift enforces those limits so that the running container is not allowed to use more of that resource than the limit you set.  ",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(50, 143, 121)",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 9,
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace=\"cpd\"})",
+          "interval": "",
+          "legendFormat": "Cores Used",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "namespace:kube_pod_container_resource_requests_cpu_cores:sum{namespace=\"cpd\"}",
+          "interval": "",
+          "legendFormat": "Cores Requests",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "sum(kube_pod_container_resource_limits_cpu_cores{namespace=\"cpd\"})",
+          "interval": "",
+          "legendFormat": "Cores Limits",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "expr": "",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "D"
+        }
+      ],
+      "title": "CP4D tenant CPU stats",
+      "transparent": true,
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+      },
+      "description": "\nMemory Used: RAM used by CloudpackForData  pods  on all the worker  nodes\n\nMemory Requests: RAM requested by CloudpackForData pods  on all the worker  nodes\n\nMemory Limits : Maximum  number of RAM that can be used by CloudpackForData pods  on all the worker  nodes\n\n\nWhen you specify the resource request for Containers in a Pod, the scheduler uses this information to decide which node to place the Pod on. \n\nWhen you specify a resource limit for a Container, OpenShift enforces those limits so that the running container is not allowed to use more of that resource than the limit you set.  ",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgb(141, 143, 50)",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 10,
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "text": {}
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "exemplar": true,
+          "expr": "sum(container_memory_rss{namespace=\"cpd\", container!=\"\"})",
+          "interval": "",
+          "legendFormat": "Memory Used",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "exemplar": true,
+          "expr": "sum(kube_pod_container_resource_requests_memory_bytes{namespace=\"cpd\"})",
+          "interval": "",
+          "legendFormat": "Memory Requests",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_OPENSHIFT_PROMETHEUS}"
+          },
+          "exemplar": true,
+          "expr": "sum(kube_pod_container_resource_limits_memory_bytes{namespace=\"cpd\"})",
+          "interval": "",
+          "legendFormat": "Memory Limits",
+          "refId": "C"
+        }
+      ],
+      "title": "CP4D tenant Memory stats",
+      "transparent": true,
+      "type": "bargauge"
+    }
+  ],
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [
+    "OpenShift",
+    "Capacity"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "OpenShift Capacity",
+  "uid": "0aOFd6vnk",
+  "version": 23,
+  "weekStart": ""
+}
