@@ -4,7 +4,12 @@ into how the Cloud Pak for Data platform is used by its business users.
 
 Monitors forked from  [original IBM monitors](https://ibm.github.io/cp4d-monitors/)
 
-
-
-
-
+```shell
+oc new-build https://github.com/kinikiti/monitors \
+--context-dir exporter \
+--name exporter \
+--to <REGISTRY>exporter:latest \
+--to-docker=true \
+--push-secret='<SECRET>' \
+--namespace cpd
+```
