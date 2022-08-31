@@ -99,13 +99,33 @@ cpd-exporter   41d
 ```
 At that point all components are deployed and metrics shold arrive in OpenShuft Prometheus within few minutes.
 ## Verification
+Setup environment variables. `NAMESPACE` variable must point to your CP4D namespace.
 ```
+NAMESPACE=cpd
 SECRET=`oc get secret -n openshift-user-workload-monitoring | grep  prometheus-user-workload-token | head -n 1 | awk '{print $1 }'`
 TOKEN=`echo $(oc get secret $SECRET -n openshift-user-workload-monitoring -o json | jq -r '.data.token') | base64 -d`
 THANOS_QUERIER_HOST=`oc get route thanos-querier -n openshift-monitoring -o json | jq -r '.spec.host'`
-NAMESPACE=cpd
-curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=up{namespace='$NAMESPACE'}" -H "Authorization: Bearer $TOKEN"
-curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=python_info" -H "Authorization: Bearer $TOKEN"
-curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=project_total_runtimes_metric" -H "Authorization: Bearer $TOKEN"
 ```
+Check if the instance is up:
+```
+# curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=up{namespace='$NAMESPACE'}" -H "Authorization: Bearer $TOKEN"
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"up","container":"exporter","endpoint":"prometheus","instance":"10.131.0.11:9000","job":"cpd-exporter-service","namespace":"cpd","pod":"exporter-1-5rxf4","prometheus":"openshift-user-workload-monitoring/user-workload","service":"cpd-exporter-service"},"value":[1661943345.56,"0"]}]}}
+```
+Check basib default python monitoring:
+```
+# curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=python_info" -H "Authorization: Bearer $TOKEN"
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"python_info","container":"pushgateway","endpoint":"pushgateway","exported_job":"CP4D","implementation":"CPython","instance":"10.128.5.34:9091","job":"pushgateway-service","major":"3","minor":"8","namespace":"cpd","patchlevel":"12","pod":"pushgateway-deployment-5958b8f8c7-tlfrj","prometheus":"openshift-user-workload-monitoring/user-workload","service":"pushgateway-service","version":"3.8.12"},"value":[1661943638.949,"1"]}]}}
+```
+Test one of the CP4D specific metrics:
+```
+# curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=jobs_count_total" -H "Authorization: Bearer $TOKEN"
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"jobs_count_total","container":"pushgateway","endpoint":"pushgateway","exported_job":"CP4D","instance":"10.128.5.34:9091","job":"pushgateway-service","jobsCount":"jobsCount","namespace":"cpd","pod":"pushgateway-deployment-5958b8f8c7-tlfrj","prometheus":"openshift-user-workload-monitoring/user-workload","service":"pushgateway-service"},"value":[1661945771.62,"14"]}]}}
+```
+Pay attention, that if you don't have jobs or projects are not running reply will be empty:
+```
+# curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=project_total_runtimes_metric" -H "Authorization: Bearer $TOKEN"
+{"status":"success","data":{"resultType":"vector","result":[]}}
+```
+This may be normal.
+
 ## Dashboards
