@@ -8,7 +8,7 @@ Monitors forked from  [original IBM monitors](https://ibm.github.io/cp4d-monitor
 Overall ideology based on [OpenShift user-defined projects monitoring](https://docs.openshift.com/container-platform/4.7/monitoring/monitoring-overview.html):
 ![Architecture](download.svg)
 
-CP4D monitored by butch jobs running periodically. Because of that metrics are delivered via [Prometheus pushgateway](https://github.com/prometheus/pushgateway).
+CP4D monitored by batch jobs running periodically. Because of that metrics are delivered via [Prometheus pushgateway](https://github.com/prometheus/pushgateway).
 ## Prerequesites
 OpenShift at least v4.6.X  
 Cloud pak for data at least v3.5.9  
