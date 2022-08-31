@@ -10,7 +10,11 @@ Overall ideology based on [OpenShift user-defined projects monitoring](https://d
 
 CP4D monitored by butch jobs running periodically. Because of that metrics are delivered via [Prometheus pushgateway](https://github.com/prometheus/pushgateway).
 ## Prerequesites
+OpenShift at least v4.6.X\\
+Cloud pak for data at least v3.5.9\\
+Internal or external OpenShuft registry with credentials stored in the secret.\\
 ## Build
+To build monitor image run the following:
 ```shell
 oc new-build https://github.com/kinikiti/monitors \
 --context-dir exporter \
@@ -19,6 +23,17 @@ oc new-build https://github.com/kinikiti/monitors \
 --to-docker=true \
 --push-secret='<SECRET>' \
 --namespace cpd
+```
+replace `<SECRET>` by secret name like `docker-pull-cpd--registry` and `<REGISTRY>` with registry URI like `registryhost01.mgmt:5000/cpd/`
+
+This should generate build and buildconfigs, create an image and push this image to registry.
+```
+# oc get build
+NAME         TYPE     FROM          STATUS     STARTED       DURATION
+exporter-1   Docker   Git@100f098   Complete   5 weeks ago   1m47s
+# oc get buildconfig
+NAME       TYPE     FROM   LATEST
+exporter   Docker   Git    1
 ```
 ## Deploy
 ## Dashboards
