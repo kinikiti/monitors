@@ -22,7 +22,49 @@ Available metrics are:
       # TYPE jobs_count_total counter
       jobs_count_total{instance="",job="CP4D",jobsCount="jobsCount"} 14
       ```
-2.
+2. Overall amoubnt of jobs that currently active (running)
+      ```
+      # HELP active_jobs_count_total Active jobs at the platform
+      # TYPE active_jobs_count_total counter
+      active_jobs_count_total{activeJobsCount="activeJobsCount",instance="",job="CP4D"} 0
+      ```
+3. Overall amount of platform connections
+      ```
+      # HELP connections_count_total Platform connection counts
+      # TYPE connections_count_total counter
+      connections_count_total{connectionCount="connectionCount",instance="",job="CP4D"} 60
+      ```
+4. Overall amount of active environments for all projects
+      ```
+      # HELP project_total_runtimes_total Total Project runtimes
+      # TYPE project_total_runtimes_total counter
+      project_total_runtimes_total{instance="",job="CP4D",projectTotalRuntimes="projectTotalRuntimes"} 0
+      ```
+5. Memory requests, limits and actual consumption for all active environments
+      ```
+      # HELP project_total_CPU_requests_total Total Project CPU requests
+      # TYPE project_total_CPU_requests_total counter
+      project_total_CPU_requests_total{instance="",job="CP4D",projectTotalCPURequests="projectTotalCPURequests"} 0
+      # HELP project_total_cpu_limits_total Total Project CPU limits
+      # TYPE project_total_cpu_limits_total counter
+      project_total_cpu_limits_total{instance="",job="CP4D",projectTotalCPULimits="projectTotalCPULimits"} 0
+      # HELP project_total_cpu_usage_total Total Project CPU usage
+      # TYPE project_total_cpu_usage_total counter
+      project_total_cpu_usage_total{instance="",job="CP4D",projectTotalCPUUsage="projectTotalCPUUsage"} 0
+      ```
+7. CPU requests, limits and actual consumption for all active environments
+      ```
+      # HELP project_total_memory_requests_total Total Project memory requests
+      # TYPE project_total_memory_requests_total counter
+      project_total_memory_requests_total{instance="",job="CP4D",projectTotalMemoryRequests="projectTotalMemoryRequests"} 0
+      # HELP project_total_memory_limits_total Total Project Memory limits
+      # TYPE project_total_memory_limits_total counter
+      project_total_memory_limits_total{instance="",job="CP4D",projectTotalMemoryLimits="projectTotalMemoryLimits"} 0
+      # HELP project_total_memory_usage_total Total Project memory usage
+      # TYPE project_total_memory_usage_total counter
+      project_total_memory_usage_total{instance="",job="CP4D",projectTotalMemoryUsage="projectTotalMemoryUsage"} 0
+      ```
+*NB* All data collected only for resources available for `admin` user.
 ## Build
 To build monitor image run the following:
 ```shell
