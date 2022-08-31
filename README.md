@@ -14,7 +14,15 @@ OpenShift at least v4.6.X
 Cloud pak for data at least v3.5.9  
 Internal or external OpenShuft registry with credentials stored in the secret.
 ## Metrics
-
+All metrics are documented via Prometheus native capabilities.  
+Available metrics are:
+1. Overall amount of jobs configured on the platform.
+      ```
+      # HELP jobs_count_total Jobs at the platform
+      # TYPE jobs_count_total counter
+      jobs_count_total{instance="",job="CP4D",jobsCount="jobsCount"} 14
+      ```
+2.
 ## Build
 To build monitor image run the following:
 ```shell
