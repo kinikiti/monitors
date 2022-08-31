@@ -22,7 +22,7 @@ spec:
            ports:
            - containerPort: 9091
         imagePullSecrets:
-         - name: <PULL SECRET NAMEW>
+         - name: <PULL SECRET NAME>
 ---
 kind: Service
 apiVersion: v1
