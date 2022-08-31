@@ -98,5 +98,14 @@ NAME           AGE
 cpd-exporter   41d
 ```
 At that point all components are deployed and metrics shold arrive in OpenShuft Prometheus within few minutes.
-
+## Verification
+```
+SECRET=`oc get secret -n openshift-user-workload-monitoring | grep  prometheus-user-workload-token | head -n 1 | awk '{print $1 }'`
+TOKEN=`echo $(oc get secret $SECRET -n openshift-user-workload-monitoring -o json | jq -r '.data.token') | base64 -d`
+THANOS_QUERIER_HOST=`oc get route thanos-querier -n openshift-monitoring -o json | jq -r '.spec.host'`
+NAMESPACE=cpd
+curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=up{namespace='$NAMESPACE'}" -H "Authorization: Bearer $TOKEN"
+curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=python_info" -H "Authorization: Bearer $TOKEN"
+curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=project_total_runtimes_metric" -H "Authorization: Bearer $TOKEN"
+```
 ## Dashboards
