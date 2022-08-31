@@ -91,7 +91,7 @@ exporter   Docker   Git    1
 Clone the project.  
 Monitors require at least empty config map named `monitoring-config`. This is an artefact from CP4D 4.0.X. Deploy this config map:  
 ```
-oc deploy -f YAML/css-cm.yaml
+oc create -f YAML/css-cm.yaml
 ```
 Verify:
 ```
@@ -111,7 +111,7 @@ Edit environment variables for metric exporter: in the `YAML/exporter.yaml`:
 Change `<REGISTRY>` to your registry host. Verify that `ICPD_CONTROLPLANE_NAMESPACE` points to your CP4D namespace (`cpd` by default). Adjust scrape interval changing `ICPD_SCRAPE_INTERVAL` (30 seconds by default)
 Deploy metric exporter:
 ```
-oc deploy -f YAML/exporter.yaml
+oc create -f YAML/exporter.yaml
 ```
 Verify:
 ```
@@ -125,7 +125,7 @@ replicationcontroller/exporter-1   1         1         1       42d
 Edit pushgateway config file `YAML/pushgateway.yaml` and replace `<PULL SECRET NAME>` by your pull-secret name.  
 Deploy Prometheus push gateway:
 ```
-oc deploy -f YAML/pushgateway.yaml
+oc create -f YAML/pushgateway.yaml
 ```
 Verify:
 ```
@@ -141,7 +141,7 @@ replicaset.apps/pushgateway-deployment-646bf7b857   1         1         1       
 ```
 Deploy servicemonitor:
 ```
-oc deploy -f YAML/servicemonitor.yaml
+oc create -f YAML/servicemonitor.yaml
 ```
 Verify:
 ```
