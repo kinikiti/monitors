@@ -10,9 +10,9 @@ Overall ideology based on [OpenShift user-defined projects monitoring](https://d
 
 CP4D monitored by butch jobs running periodically. Because of that metrics are delivered via [Prometheus pushgateway](https://github.com/prometheus/pushgateway).
 ## Prerequesites
-OpenShift at least v4.6.X\\
-Cloud pak for data at least v3.5.9\\
-Internal or external OpenShuft registry with credentials stored in the secret.\\
+OpenShift at least v4.6.X  
+Cloud pak for data at least v3.5.9  
+Internal or external OpenShuft registry with credentials stored in the secret.
 ## Build
 To build monitor image run the following:
 ```shell
