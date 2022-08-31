@@ -36,4 +36,67 @@ NAME       TYPE     FROM   LATEST
 exporter   Docker   Git    1
 ```
 ## Deploy
+Clone the project.  
+Monitors require at least empty config map named `monitoring-config`. This is an artefact from CP4D 4.0.X. Deploy this config map:  
+```
+oc deploy -f YAML/css-cm.yaml
+```
+Verify:
+```
+# oc get cm monitoring-config
+NAME                DATA   AGE
+monitoring-config   0      62d
+```
+Edit environment variables for metric exporter: in the `YAML/exporter.yaml`:
+```yaml
+      - env:
+        - name: ICPD_CONTROLPLANE_NAMESPACE
+          value: cpd
+        - name: ICPD_SCRAPE_INTERVAL
+          value: "30"
+        image: <REGISTRY>/exporter:latest
+```
+Change `<REGISTRY>` to your registry host. Verify that `ICPD_CONTROLPLANE_NAMESPACE` points to your CP4D namespace (`cpd` by default). Adjust scrape interval changing `ICPD_SCRAPE_INTERVAL` (30 seconds by default)
+Deploy metric exporter:
+```
+oc deploy -f YAML/exporter.yaml
+```
+Verify:
+```
+# oc get all -l app=cpd-exporter
+NAME                   READY   STATUS    RESTARTS   AGE
+pod/exporter-1-5rxf4   1/1     Running   262        32d
+
+NAME                               DESIRED   CURRENT   READY   AGE
+replicationcontroller/exporter-1   1         1         1       42d
+```
+Edit pushgateway config file `YAML/pushgateway.yaml` and replace `<PULL SECRET NAME>` by your pull-secret name.  
+Deploy Prometheus push gateway:
+```
+oc deploy -f YAML/pushgateway.yaml
+```
+Verify:
+```
+# oc get all -l app=pushgateway
+NAME                                          READY   STATUS    RESTARTS   AGE
+pod/pushgateway-deployment-646bf7b857-2chhp   1/1     Running   0          32d
+
+NAME                                     READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/pushgateway-deployment   1/1     1            1           41d
+
+NAME                                                DESIRED   CURRENT   READY   AGE
+replicaset.apps/pushgateway-deployment-646bf7b857   1         1         1       41d
+```
+Deploy servicemonitor:
+```
+oc deploy -f YAML/servicemonitor.yaml
+```
+Verify:
+```
+# oc get ServiceMonitor
+NAME           AGE
+cpd-exporter   41d
+```
+At that point all components are deployed and metrics shold arrive in OpenShuft Prometheus within few minutes.
+
 ## Dashboards
