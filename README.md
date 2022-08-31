@@ -64,7 +64,7 @@ Available metrics are:
       # TYPE project_total_memory_usage_total counter
       project_total_memory_usage_total{instance="",job="CP4D",projectTotalMemoryUsage="projectTotalMemoryUsage"} 0
       ```
-*NB* All data collected only for resources available for `admin` user.
+__*NB*__ All data collected only for resources available for `admin` user.
 ## Build
 To build monitor image run the following:
 ```shell
