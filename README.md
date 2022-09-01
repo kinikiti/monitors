@@ -6,11 +6,13 @@ Monitors forked from  [original IBM monitors](https://ibm.github.io/cp4d-monitor
 
 ## Architecture
 Overall ideology based on [OpenShift user-defined projects monitoring](https://docs.openshift.com/container-platform/4.7/monitoring/monitoring-overview.html):
-![Architecture](download.svg)
+![Architecture](docs/architecture.svg)
 
-CP4D monitored by python code running periodically. Data gathering is quite slow and depend on the amount of content in CP4D. Because of that metrics are delivered via [Prometheus pushgateway](https://github.com/prometheus/pushgateway). Python code collect data as an `admin` user via [`cpdctl`](https://github.com/IBM/cpdctl) tool.  
+CP4D monitored by python code running periodically. Data gathering is quite slow and depend on the amount of content in CP4D. 
+Because of that metrics are delivered via [Prometheus pushgateway](https://github.com/prometheus/pushgateway). 
+Python code collect data as an `admin` user via [`cpdctl`](https://github.com/IBM/cpdctl) tool.  
 All monitors are in the same namespace as a CP4D instance and monitor only one CP4D within same namespace.
-## Prerequesites
+## Prerequisites
 OpenShift at least v4.6.X  
 Cloud pak for data at least v3.5.9  
 Internal or external OpenShuft registry with credentials stored in the secret.
@@ -406,3 +408,8 @@ python_info{implementation="CPython",instance="",job="CP4D",major="3",minor="8",
 bash-4.4$
 ```
 ## Dashboards
+There are two Grafana dashboards in [Dashboards](Dashboards) folder. One collect overall load from OpenShift cluster and 
+useful for Data Scientists to plan resources:  
+![OpenShift](docs/oc-dashboard.JPG)
+Another one is a Cloud Pak for Data dashboard created from data collected by exporter:  
+![CP4D](docs/cp4d-dashboard.JPG)
