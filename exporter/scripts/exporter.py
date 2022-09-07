@@ -75,7 +75,9 @@ class CP4DCollector(object):
                 total_jobs += jobs_list[project['metadata']['guid']]["total_rows"]
 
             labels = 'icpdsupport/projectId={},runtime=true'.format(project['metadata']['guid'])
+            print(labels)
             pods = cp4d_monitor.get_pod_usage(label_selector=labels)
+            print(pods)
 
             app_labels = 'dsxProjectId={}'.format(project['metadata']['guid'])
             deployments = cp4d_monitor.get_deployment(label_selector=app_labels)
