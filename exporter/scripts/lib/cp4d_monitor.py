@@ -60,7 +60,8 @@ def get_project_list():
     print('Cache renewal interval {}'.format(project_fetch_interval))
     print('Current time {}'.format(current_time))
     print('Difference in seconds {}'.format(time_difference))
-    if need_to_fetch(project_fetch_interval, last_fetch_timestamp) or not os.path.exists(projects_cache_file):
+    
+    if time_difference >= project_fetch_interval or not os.path.exists(projects_cache_file):
         print('fetching projects')
         project_data = cpdctl.cpdctl_get_projects()
         if project_data['total_results'] > 0:
