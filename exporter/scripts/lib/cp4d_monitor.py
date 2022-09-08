@@ -55,10 +55,11 @@ def get_project_list():
     project_fetch_interval = float(cacheconfig[project_refresh_interval_key])
     last_fetch_timestamp = float(cacheconfig[project_last_refresh_key])
     if need_to_fetch(project_fetch_interval, last_fetch_timestamp) or not os.path.exists(projects_cache_file):
+        print('fetching projects')
         project_data = cpdctl.cpdctl_get_projects()
         if project_data['total_results'] > 0:
             projects = project_data['resources']
-
+        print(projects)
         with open(projects_cache_file, 'w') as f:
             f.write(json.dumps(projects))
         cacheconfig[project_last_refresh_key] = str(get_current_timestamp())
