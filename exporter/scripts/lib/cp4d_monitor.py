@@ -54,6 +54,12 @@ def get_project_list():
     cacheconfig = k8s.get_config_map(namespace=namespace, name=configmap_name)
     project_fetch_interval = float(cacheconfig[project_refresh_interval_key])
     last_fetch_timestamp = float(cacheconfig[project_last_refresh_key])
+    current_time = datetime.datetime.now()
+    time_difference = (current_time - last_fetch_timestamp).total_seconds()
+    print('Last time data was fetched %s'.format(last_fetch_timestamp))
+    print('Cache renewal interval %s'.format(project_fetch_interval))
+    print('Current time %s'.format(current_time))
+    print(Difference in seconds %s'.format(time_difference))
     if need_to_fetch(project_fetch_interval, last_fetch_timestamp) or not os.path.exists(projects_cache_file):
         print('fetching projects')
         project_data = cpdctl.cpdctl_get_projects()
